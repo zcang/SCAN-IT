@@ -39,28 +39,12 @@ def rep_dgi(
     class Encoder(nn.Module):
         def __init__(self, in_channels, hidden_channels):
             super(Encoder, self).__init__()
-            # nb_layers = len(hidden_channels)
-            # self.nb_layers = nb_layers
-            # fc = []
-            # for i in range(nb_layers):
-            #     if i == 0:
-            #         fc.append(GCNConv(in_channels, hidden_channels[i], cached=False))
-            #         fc.append(nn.PReLU(hidden_channels[i]))
-            #     else:
-            #         fc.append(GCNConv(hidden_channels[i-1], hidden_channels[i], cached=False))
-            #         fc.append(nn.PReLU(hidden_channels[i]))
-            # self.fc = nn.ModuleList(fc)
             self.conv = GCNConv(in_channels, hidden_channels, cached=False)
             self.prelu = nn.PReLU(hidden_channels)
             self.conv2 = GCNConv(hidden_channels, hidden_channels, cached=False)
             self.prelu2 = nn.PReLU(hidden_channels)
         
         def forward(self, x, edge_index):
-            # for i in range(self.nb_layers):
-            #     if i % 2 == 0:
-            #         x = self.fc[i](x, edge_index)
-            #     else:
-            #         x = self.fc[i](x)
             x = self.conv(x, edge_index)
             x = self.prelu(x)
             x = self.conv2(x, edge_index)
@@ -90,8 +74,6 @@ def rep_dgi(
         optimiser.zero_grad()
         pos_z, neg_z, summary = model(X, edge_list)
         loss = model.loss(pos_z, neg_z, summary)
-        # for param in model.parameters():
-        #     loss += 0.001 * torch.sum(torch.abs(param))
         loss.backward()
         optimiser.step()
         return loss.item()
