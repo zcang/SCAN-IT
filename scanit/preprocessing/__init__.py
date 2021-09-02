@@ -1,1 +1,0 @@
-from ._infer_spatial import infer_spatial_information
